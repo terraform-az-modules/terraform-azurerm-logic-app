@@ -67,7 +67,7 @@ resource "azurerm_private_endpoint" "pep" {
   subnet_id           = var.private_endpoint_subnet_id
   tags                = module.labels.tags
   private_service_connection {
-    name                           = var.resource_position_prefix ? format("psc-logicapp-%s", local.name) : format("%s-psc-logicapp", local.name)
+    name                           = var.resource_position_prefix ? format("psc-la-%s", local.name) : format("%s-psc-la", local.name)
     is_manual_connection           = false
     private_connection_resource_id = azurerm_logic_app_standard.logic_app[0].id
     subresource_names              = ["sites"]
@@ -99,7 +99,7 @@ resource "azurerm_application_insights_api_key" "read_telemetry" {
 
 resource "azurerm_logic_app_standard" "logic_app" {
   count                                    = var.enabled && var.standard_enabled ? 1 : 0
-  name                                     = format(var.resource_position_prefix ? "logapp-stand-%s" : "%s-logapp-stand", local.name)
+  name                                     = format(var.resource_position_prefix ? "la-stand-%s" : "%s-la-stand", local.name)
   location                                 = var.location
   resource_group_name                      = var.resource_group_name
   app_service_plan_id                      = var.app_service_plan_id == null ? azurerm_service_plan.service_plan[0].id : var.app_service_plan_id
@@ -238,7 +238,7 @@ resource "azurerm_storage_share_file" "workflow_file" {
 
 resource "azurerm_logic_app_workflow" "main" {
   count               = var.enabled && var.consumption_enable ? 1 : 0
-  name                = format(var.resource_position_prefix ? "logapp-consump-%s" : "%s-logapp-consump", local.name)
+  name                = format(var.resource_position_prefix ? "la-consump-%s" : "%s-la-consump", local.name)
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -299,7 +299,7 @@ resource "azurerm_logic_app_workflow" "main" {
 
 resource "azurerm_logic_app_trigger_http_request" "main" {
   count         = var.enabled && var.http_trigger_enable ? 1 : 0
-  name          = format(var.resource_position_prefix ? "logapp-trig-http-%s" : "%s-logapp-trig-http", local.name)
+  name          = format(var.resource_position_prefix ? "la-trig-http-%s" : "%s-la-trig-http", local.name)
   logic_app_id  = azurerm_logic_app_workflow.main[0].id
   schema        = var.schema
   method        = var.trigger_method
@@ -309,7 +309,7 @@ resource "azurerm_logic_app_trigger_http_request" "main" {
 
 resource "azurerm_logic_app_trigger_recurrence" "main" {
   count        = var.enabled && var.recurrence_trigger_enable ? 1 : 0
-  name         = format(var.resource_position_prefix ? "logapp-trig-rec-%s" : "%s-logapp-trig-rec", local.name)
+  name         = format(var.resource_position_prefix ? "la-trig-rec-%s" : "%s-la-trig-rec", local.name)
   logic_app_id = azurerm_logic_app_workflow.main[0].id
   frequency    = var.frequency
   interval     = var.interval
@@ -328,7 +328,7 @@ resource "azurerm_logic_app_trigger_recurrence" "main" {
 
 resource "azurerm_logic_app_trigger_custom" "main" {
   count        = var.enabled && var.custom_trigger_enable ? 1 : 0
-  name         = format(var.resource_position_prefix ? "logapp-trig-custom-%s" : "%s-logapp-trig-custom", local.name)
+  name         = format(var.resource_position_prefix ? "la-trig-custom-%s" : "%s-la-trig-custom", local.name)
   logic_app_id = azurerm_logic_app_workflow.main[0].id
   body         = var.custom_trigger_body
   depends_on   = [azurerm_logic_app_standard.logic_app[0], azurerm_logic_app_workflow.main[0]]
@@ -340,7 +340,7 @@ resource "azurerm_logic_app_trigger_custom" "main" {
 
 resource "azurerm_logic_app_action_custom" "main" {
   count        = var.enabled && var.custom_action_enable ? 1 : 0
-  name         = format(var.resource_position_prefix ? "logapp-action-custom-%s" : "%s-logapp-action-custom", local.name)
+  name         = format(var.resource_position_prefix ? "la-action-custom-%s" : "%s-la-action-custom", local.name)
   logic_app_id = azurerm_logic_app_workflow.main[0].id
   body         = var.custom_action_body
   depends_on   = [azurerm_logic_app_workflow.main[0]]
@@ -348,7 +348,7 @@ resource "azurerm_logic_app_action_custom" "main" {
 
 resource "azurerm_logic_app_action_http" "main" {
   count        = var.enabled && var.http_action_enable ? 1 : 0
-  name         = format(var.resource_position_prefix ? "logapp-action-http-%s" : "%s-logapp-action-http", local.name)
+  name         = format(var.resource_position_prefix ? "la-action-http-%s" : "%s-la-action-http", local.name)
   logic_app_id = azurerm_logic_app_workflow.main[0].id
   method       = var.action_method
   uri          = var.uri
@@ -372,7 +372,7 @@ resource "azurerm_logic_app_action_http" "main" {
 
 resource "azurerm_logic_app_integration_account" "main" {
   count                              = var.enabled && var.integration_account_enable ? 1 : 0
-  name                               = format(var.resource_position_prefix ? "logapp-ia-%s" : "%s-logapp-ia", local.name)
+  name                               = format(var.resource_position_prefix ? "la-ia-%s" : "%s-la-ia", local.name)
   location                           = var.location
   resource_group_name                = var.resource_group_name
   sku_name                           = var.sku_name
@@ -381,7 +381,7 @@ resource "azurerm_logic_app_integration_account" "main" {
 
 resource "azurerm_logic_app_integration_account_schema" "main" {
   count                    = var.enabled && var.integration_account_schema_enable ? 1 : 0
-  name                     = format(var.resource_position_prefix ? "logapp-iaschema-%s" : "%s-logapp-iaschema", local.name)
+  name                     = format(var.resource_position_prefix ? "la-iaschema-%s" : "%s-la-iaschema", local.name)
   integration_account_name = azurerm_logic_app_integration_account.main[0].name
   resource_group_name      = var.resource_group_name
   content                  = var.schema_content
@@ -391,7 +391,7 @@ resource "azurerm_logic_app_integration_account_schema" "main" {
 
 resource "azurerm_logic_app_integration_account_map" "main" {
   count                    = var.enabled && var.integration_account_map_enable ? 1 : 0
-  name                     = format(var.resource_position_prefix ? "logapp-iamap-%s" : "%s-logapp-iamap", local.name)
+  name                     = format(var.resource_position_prefix ? "la-iamap-%s" : "%s-la-iamap", local.name)
   integration_account_name = azurerm_logic_app_integration_account.main[0].name
   resource_group_name      = var.resource_group_name
   content                  = var.map_content
@@ -401,7 +401,7 @@ resource "azurerm_logic_app_integration_account_map" "main" {
 
 resource "azurerm_logic_app_integration_account_certificate" "main" {
   count                    = var.enabled && var.integration_account_certificate_enable ? 1 : 0
-  name                     = format(var.resource_position_prefix ? "logapp-iacert-%s" : "%s-logapp-iacert", local.name)
+  name                     = format(var.resource_position_prefix ? "la-iacert-%s" : "%s-la-iacert", local.name)
   integration_account_name = azurerm_logic_app_integration_account.main[0].name
   resource_group_name      = var.resource_group_name
   public_certificate       = var.public_certificate
@@ -420,7 +420,7 @@ resource "azurerm_logic_app_integration_account_certificate" "main" {
 
 resource "azurerm_logic_app_integration_account_partner" "main" {
   count                    = var.enabled && var.integration_account_partner_enable ? 1 : 0
-  name                     = format(var.resource_position_prefix ? "logapp-ia-partner-%s" : "%s-logapp-ia-partner", local.name)
+  name                     = format(var.resource_position_prefix ? "la-ia-partner-%s" : "%s-la-ia-partner", local.name)
   integration_account_name = azurerm_logic_app_integration_account.main[0].name
   resource_group_name      = var.resource_group_name
 
@@ -437,7 +437,7 @@ resource "azurerm_logic_app_integration_account_partner" "main" {
 
 resource "azurerm_logic_app_integration_account_agreement" "main" {
   count                    = var.enabled && var.integration_account_agreement_enable ? 1 : 0
-  name                     = format(var.resource_position_prefix ? "logapp-ia-agreement-%s" : "%s-logapp-ia-agreement", local.name)
+  name                     = format(var.resource_position_prefix ? "la-ia-agreement-%s" : "%s-la-ia-agreement", local.name)
   integration_account_name = azurerm_logic_app_integration_account.main[0].name
   resource_group_name      = var.resource_group_name
   agreement_type           = var.agreement_type
@@ -470,7 +470,7 @@ resource "azurerm_logic_app_integration_account_agreement" "main" {
 
 resource "azurerm_monitor_diagnostic_setting" "web_app_diag" {
   count = var.enabled && var.enable_diagnostic ? 1 : 0
-  name  = var.resource_position_prefix ? format("diag-logapp-%s", local.name) : format("%s-diag-logapp", local.name)
+  name  = var.resource_position_prefix ? format("diag-la-%s", local.name) : format("%s-diag-la", local.name)
 
   # Dynamically select target resource based on OS type
   target_resource_id         = var.standard_enabled ? azurerm_logic_app_standard.logic_app[0].id : azurerm_logic_app_workflow.main[0].id
