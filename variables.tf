@@ -213,6 +213,34 @@ variable "enable_app_service_enviroment" {
   description = "Enable or Disable creation of app_service_enviroment_v3."
 }
 
+variable "worker_count" {
+  type        = number
+  default     = 1
+  description = "The number of Workers (instances) to be allocated."
+}
+
+variable "maximum_elastic_worker_count" {
+  type        = number
+  default     = null
+  description = "The maximum number of workers to use in an Elastic SKU Plan. Cannot be set unless using an Elastic SKU."
+}
+
+variable "per_site_scaling_enabled" {
+  type        = bool
+  default     = false
+  description = "Should Per Site Scaling be enabled."
+}
+
+variable "zone_balancing_enabled" {
+  type    = bool
+  default = false
+
+  validation {
+    condition     = !var.zone_balancing_enabled || (var.worker_count > 1)
+    error_message = "zone_balancing_enabled can only be true when worker_count > 1."
+  }
+}
+
 variable "subnet_id" {
   type        = string
   default     = null
@@ -389,34 +417,10 @@ variable "storage_share_file_enable" {
   description = "Enable or disable creation of the Storage Share File."
 }
 
-variable "share_name" {
-  type        = string
-  default     = null
-  description = "The name of the Storage Share Directory."
-}
-
 variable "storage_share_url" {
   type        = string
   default     = null
   description = "The URL of the Storage Share."
-}
-
-variable "share_file_name" {
-  type        = string
-  default     = null
-  description = "The name of the Storage Share File."
-}
-
-variable "source_file_path" {
-  type        = string
-  default     = null
-  description = "The path to the source file for the Storage Share File."
-}
-
-variable "content_type" {
-  type        = string
-  default     = null
-  description = "The content type of the Storage Share File."
 }
 
 variable "workflow_files" {

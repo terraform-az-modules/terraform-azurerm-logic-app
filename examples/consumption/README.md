@@ -26,7 +26,7 @@ This directory contains an example usage of the **terraform-azure-logic-app**. I
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_logic_app"></a> [logic_app](#module\_flexible-mysql) | ../../ | n/a |
+| <a name="module_logic_app"></a> [logic_app](#module\_logic_app) | ../../ | n/a |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform-az-modules/resource-group/azurerm | 1.0.3 |
 
 

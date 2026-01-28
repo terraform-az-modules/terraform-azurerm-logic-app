@@ -45,7 +45,14 @@ resource "azurerm_service_plan" "service_plan" {
   location                   = var.location
   os_type                    = var.os_type
   sku_name                   = var.sku
+  worker_count = (
+    var.os_type == "Linux" && var.sku == "B1" ? null :
+    var.worker_count
+  )
   app_service_environment_id = try(azurerm_app_service_environment_v3.main[0].id, null)
+  maximum_elastic_worker_count = var.maximum_elastic_worker_count
+  per_site_scaling_enabled     = var.per_site_scaling_enabled
+  zone_balancing_enabled       = var.zone_balancing_enabled
 }
 
 ##-----------------------------------------------------------------------------
@@ -97,7 +104,6 @@ resource "azurerm_logic_app_standard" "logic_app" {
   app_service_plan_id                      = var.app_service_plan_id == null ? azurerm_service_plan.service_plan[0].id : var.app_service_plan_id
   storage_account_name                     = var.storage_account_name
   storage_account_access_key               = var.storage_account_access_key
-  app_settings                             = var.app_settings
   use_extension_bundle                     = var.use_extension_bundle
   client_affinity_enabled                  = var.client_affinity_enabled
   client_certificate_mode                  = var.client_certificate_mode
@@ -110,6 +116,9 @@ resource "azurerm_logic_app_standard" "logic_app" {
   virtual_network_subnet_id                = var.virtual_network_subnet_id
   vnet_content_share_enabled               = var.vnet_content_share_enabled
 
+  # app_settings = var.staging_slot_custom_app_settings == null ? local.app_settings : merge(local.default_app_settings, var.staging_slot_custom_app_settings)
+  app_settings = local.app_settings
+
   dynamic "connection_string" {
     for_each = var.connection_strings
     content {
@@ -120,7 +129,7 @@ resource "azurerm_logic_app_standard" "logic_app" {
   }
 
   dynamic "site_config" {
-    for_each = var.site_config == null ? [] : [var.site_config]
+    for_each = [local.site_config]
     content {
       always_on                        = lookup(site_config.value, "always_on", null)
       app_scale_limit                  = lookup(site_config.value, "app_scale_limit", null)

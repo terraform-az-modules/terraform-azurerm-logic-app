@@ -148,25 +148,25 @@ output "logic-app_ia_name" {
 
 output "logic-app_ia_partner_ids" {
   description = "The Integration Account Partner IDs."
-  value       = try(azurerm_logic_app_integration_account_partner.main.*.id, null)
+  value       = try(azurerm_logic_app_integration_account_partner.main[*].id, null)
 }
 
 output "logic-app_ia_schema_ids" {
   description = "The Integration Account Schema IDs."
-  value       = try(azurerm_logic_app_integration_account_schema.main.*.id, null)
+  value       = try(azurerm_logic_app_integration_account_schema.main[*].id, null)
 }
 
 output "logic-app_ia_map_ids" {
   description = "The Integration Account Map IDs."
-  value       = try(azurerm_logic_app_integration_account_map.main.*.id, null)
+  value       = try(azurerm_logic_app_integration_account_map.main[*].id, null)
 }
 
 output "logic-app_ia_certificate_ids" {
   description = "The Integration Account Certificate IDs."
-  value       = try(azurerm_logic_app_integration_account_certificate.main.*.id, null)
+  value       = try(azurerm_logic_app_integration_account_certificate.main[*].id, null)
 }
 
 output "logic-app_ia_agreement_ids" {
   description = "The Integration Account Agreement IDs."
-  value       = try(azurerm_logic_app_integration_account_agreement.main.*.id, null)
+  value       = try(azurerm_logic_app_integration_account_agreement.main[*].id, null)
 }
