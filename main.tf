@@ -39,20 +39,21 @@ resource "azurerm_app_service_environment_v3" "main" {
 }
 
 resource "azurerm_service_plan" "service_plan" {
-  count                      = var.enabled && var.standard_enabled && var.app_service_plan_id == null ? 1 : 0
-  name                       = local.name
-  resource_group_name        = var.resource_group_name
-  location                   = var.location
-  os_type                    = var.os_type
-  sku_name                   = var.sku
+  count               = var.enabled && var.standard_enabled && var.app_service_plan_id == null ? 1 : 0
+  name                = var.resource_position_prefix ? format("asp-%s", local.name) : format("%s-asp", local.name)
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  os_type             = var.os_type
+  sku_name            = var.sku
   worker_count = (
     var.os_type == "Linux" && var.sku == "B1" ? null :
     var.worker_count
   )
-  app_service_environment_id = try(azurerm_app_service_environment_v3.main[0].id, null)
+  app_service_environment_id   = try(azurerm_app_service_environment_v3.main[0].id, null)
   maximum_elastic_worker_count = var.maximum_elastic_worker_count
   per_site_scaling_enabled     = var.per_site_scaling_enabled
   zone_balancing_enabled       = var.zone_balancing_enabled
+  tags                         = module.labels.tags
 }
 
 ##-----------------------------------------------------------------------------
